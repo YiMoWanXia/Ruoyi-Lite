@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.lite.core.module.monitor.mapper.SysLoginLogMapper">
+
+    <resultMap type="com.ruoyi.lite.core.module.monitor.domain.SysLoginLog" id="SysLogininforResult">
+        <id property="logId" column="log_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="status" column="status"/>
+        <result property="ipaddr" column="ipaddr"/>
+        <result property="loginLocation" column="login_location"/>
+        <result property="browser" column="browser"/>
+        <result property="os" column="os"/>
+        <result property="msg" column="msg"/>
+    </resultMap>
+
+    <insert id="insertLoginLog" parameterType="com.ruoyi.lite.core.module.monitor.domain.SysLoginLog">
+        insert into sys_login_log (user_name, status, ipaddr, login_location, browser, os, msg, login_time)
+        values (#{userName}, #{status}, #{ipaddr}, #{loginLocation}, #{browser}, #{os}, #{msg}, sysdate())
+    </insert>
+
+    <select id="selectLoginLogList" parameterType="com.ruoyi.lite.core.module.monitor.domain.SysLoginLog" resultMap="SysLogininforResult">
+        select log_id, user_name, ipaddr, login_location, browser, os, status, msg, login_time from sys_login_log
+        <where>
+            <if test="ipaddr != null and ipaddr != ''">
+                AND ipaddr like concat('%', #{ipaddr}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND user_name like concat('%', #{userName}, '%')
+            </if>
+        </where>
+        order by log_id desc
+    </select>
+
+    <delete id="deleteLoginLogByIds" parameterType="Long">
+        delete from sys_login_log where log_id in
+        <foreach collection="array" item="logIds" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+
+    <update id="cleanLoginLog">
+        truncate table sys_login_log
+    </update>
+
+    <select id="selectLoginLogPageList" resultMap="SysLogininforResult">
+        select log_id, user_name, ipaddr, login_location, browser, os, status, msg, login_time from sys_login_log
+        <where>
+            <if test="loginLog.ipaddr != null and loginLog.ipaddr != ''">
+                AND ipaddr like concat('%', #{loginLog.ipaddr}, '%')
+            </if>
+            <if test="loginLog.status != null and loginLog.status != ''">
+                AND status = #{loginLog.status}
+            </if>
+            <if test="loginLog.userName != null and loginLog.userName != ''">
+                AND user_name like concat('%', #{loginLog.userName}, '%')
+            </if>
+            <if test="loginLog.beginTime != null and loginLog.beginTime != ''"><!-- 开始时间检索 -->
+                AND login_time &gt;= #{loginLog.beginTime}
+            </if>
+            <if test="loginLog.endTime != null and loginLog.endTime != ''"><!-- 结束时间检索 -->
+                AND login_time &lt;= #{loginLog.endTime}
+            </if>
+        </where>
+        order by log_id desc
+    </select>
+
+</mapper>

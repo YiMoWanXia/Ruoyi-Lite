@@ -1,0 +1,51 @@
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # 连接数满后的排队数
+    accept-count: 200
+    threads:
+      # 按实际机器配置，避免上下文切换开销
+      max: 80
+      # 初始空闲线程
+      min-spare: 20
+
+# Spring配置
+spring:
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  profiles:
+    active: dev
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size: 10MB
+      # 设置总上传的文件大小
+      max-request-size: 20MB
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  # 搜索指定包别名
+  typeAliasesPackage: com.ruoyi.**.domain
+  # 配置 mapper 的扫描，找到所有的 mapper.xml 映射文件
+  mapperLocations: classpath*:mybatis/**/*Mapper.xml
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+      update-strategy: not_null
+      logic-delete-field: is_delete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
